@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getColleges } from "@/firebase/firestore";
+import { getColleges } from "../firebase/firestore";
 
 const AdminDashboard = () => {
   const [colleges, setColleges] = useState<any[]>([]);

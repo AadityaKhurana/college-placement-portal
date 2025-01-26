@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getCurrentUser, loginUser, registerUser } from "../firebase/auth";
+import { getCurrentUser, loginUser, registerUser } from "./firebase/auth";
 import { useRouter } from "next/router";
 import { getDatabase, ref, set, get, child } from "firebase/database";
 
@@ -22,7 +22,7 @@ const Login = () => {
             if (user) {
                 console.log("User logged in");
                 const dbRef = ref(getDatabase());
-                get(child(dbRef, `users/${user.uid}`)).then((snapshot) => {
+                get(child(dbRef, `users/${user.uid}/role`)).then((snapshot) => {
                 if (snapshot.exists()) {
                     if(snapshot.val() == "student") {
                         console.log("Student");
@@ -34,7 +34,8 @@ const Login = () => {
                         console.log("Admin");
                         router.push("/admin/dashboard");
                     }
-                } else {
+            }
+            else {
                     console.log("No data available");
                 }
                 }).catch((error) => {
@@ -55,7 +56,13 @@ const Login = () => {
             var user = getCurrentUser();
             if (user) {
                 console.log("User registered");
-                set(ref(db, 'users/'+user.uid), "student");
+                set(ref(db, 'users/'+user.uid+'/role'), "student"); //change role based on user
+                router.push("/student/dashboard"); //change redirect based on role
+                set(ref(db, 'users/'+user.uid+'/email'), email);
+                set(ref(db, 'users/'+user.uid+'/name'), name);
+                //TODO: Add college section
+                set(ref(db, 'users/'+user.uid+'/college'), "uniqueUID");
+                set(ref(db, 'users/'+user.uid+'/postings'), {"a": "b"});
             } else {
                 setError("User is null");
             }
