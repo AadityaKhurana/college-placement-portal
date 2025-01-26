@@ -388,10 +388,11 @@ const StudentDashboard = () => {
 						onChange={(e) => setFilter(e.target.value)}
 						className={styles.filterSelect}
 					>
-						<option value="All">All Status</option>
+						<option value="All">All</option>
 						<option value="Not Applied">Not Applied</option>
 						<option value="Applied">Applied</option>
 						<option value="Interview">Interview</option>
+						<option value="Accepted">Accepted</option>
 						<option value="Rejected">Rejected</option>
 					</select>
 				</div>
