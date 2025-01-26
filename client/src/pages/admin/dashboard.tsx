@@ -243,33 +243,6 @@ const AdminDashboard = () => {
 						))}
 					</div>
 				);
-			case 'requirements':
-				return (
-					<div className={styles.requirementsSection}>
-						<h2>Placement Requirements</h2>
-						{colleges.map(college => (
-							<div key={college.id} className={styles.requirementCard}>
-								<h3>{college.name} Requirements</h3>
-								<div>
-									<strong>Eligibility Criteria:</strong>
-									<ul>
-										{college.requirementSpecifications?.eligibilityCriteria?.map((criteria, index) => (
-											<li key={index}>{criteria}</li>
-										))}
-									</ul>
-								</div>
-								<div>
-									<strong>Document Templates:</strong>
-									<ul>
-										{college.requirementSpecifications?.documentTemplates?.map((template, index) => (
-											<li key={index}>{template}</li>
-										))}
-									</ul>
-								</div>
-							</div>
-						))}
-					</div>
-				);
 		}
 	};
 
@@ -281,7 +254,6 @@ const AdminDashboard = () => {
 				<button onClick={() => setActiveSection('colleges')}>Colleges</button>
 				<button onClick={() => setActiveSection('students')}>Students</button>
 				<button onClick={() => setActiveSection('recruiters')}>Recruiters</button>
-				<button onClick={() => setActiveSection('requirements')}>Requirements</button>
 				<button onClick={handleLogout} className={styles.editButton}>
 					Logout
 				</button>

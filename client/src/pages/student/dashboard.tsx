@@ -1,110 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { auth } from "../../firebase/firebaseConfig";
-// import { onAuthStateChanged } from "firebase/auth";
-// import { useRouter } from "next/router";
-// import { logoutUser } from "../../firebase/auth";
-
-// const StudentDashboard = () => {
-//   	const [user, setUser] = useState<any>(null);
-// 	const router = useRouter();
-
-// 	useEffect(() => {
-// 		const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-// 			setUser(currentUser);
-// 		});
-// 		return () => unsubscribe();
-//   	}, []);
-
-	
-// 	const handleLogout = async (e: React.FormEvent) => {
-// 		e.preventDefault();
-// 		try {
-// 			await logoutUser();
-// 			router.push("/");
-// 		} catch (err: any) {
-// 			console.error(err.message);	
-// 		};
-// 	};
-//   	return (
-// 		<div className="p-4">
-// 			<h1 className="text-2xl font-bold mb-4">Student Dashboard</h1>
-// 			{user ? <p>Welcome, {user.email}</p> : <p>Please log in to view your dashboard.</p>}
-// 			<button onClick={handleLogout} className="bg-blue-500 text-white p-2 rounded w-full">Logout</button>
-// 		</div>
-//   	);
-// };
-
-// export default StudentDashboard;
-
-
-// import { useEffect, useState } from "react";
-// import { auth } from "@/firebase/firebaseConfig";
-// import { onAuthStateChanged } from "firebase/auth";
-
-// const StudentDashboard = () => {
-//   const [user, setUser] = useState<any>(null);
-
-//   useEffect(() => {
-//     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-//       setUser(currentUser);
-//     });
-//     return () => unsubscribe();
-//   }, []);
-
-//   return (
-//     <div className="p-4">
-//       <h1 className="text-2xl font-bold mb-4">Student Dashboard</h1>
-//       {user ? <p>Welcome, {user.email}</p> : <p>Please log in to view your dashboard.</p>}
-//     </div>
-//   );
-// };
-
-// export default StudentDashboard;
-// import { useState } from "react";
-
-// const StudentDashboard = () => {
-//   const [profile, setProfile] = useState({
-//     name: "Alice Johnson",
-//     email: "alice@example.com",
-//     resume: "Resume.pdf",
-//   });
-
-//   const [jobs, setJobs] = useState([
-//     { id: 1, title: "Software Engineer", company: "ABC Corp", status: "Applied" },
-//     { id: 2, title: "Data Analyst", company: "XYZ Ltd", status: "Not Applied" },
-//   ]);
-
-//   return (
-//     <div className="p-4">
-//       <h1 className="text-2xl font-bold mb-4">Student Dashboard</h1>
-
-//       <section className="mb-6">
-//         <h2 className="text-xl font-semibold mb-2">Profile</h2>
-//         <p>Name: {profile.name}</p>
-//         <p>Email: {profile.email}</p>
-//         <p>Resume: <a href="#">{profile.resume}</a></p>
-//       </section>
-
-//       <section>
-//         <h2 className="text-xl font-semibold mb-2">Job Listings</h2>
-//         <ul>
-//           {jobs.map((job) => (
-//             <li key={job.id} className="mb-2">
-//               {job.title} at {job.company} - 
-//               <span className={`ml-2 ${job.status === "Applied" ? "text-green-500" : "text-gray-500"}`}>
-//                 {job.status}
-//               </span>
-//             </li>
-//           ))}
-//         </ul>
-//       </section>
-//     </div>
-//   );
-// };
-
-// export default StudentDashboard;
-
-//
 import Notifications from "@/components/Notifications";
 import { ref, set, get, child } from "firebase/database";
 import { database } from "../firebase/firebaseConfig";
@@ -117,13 +10,6 @@ import styles from '@/styles/StudentDashboard.module.css';
 
 
 const StudentDashboard = () => {
-	// const [profile, setProfile] = useState({
-	// 	name: "Loading...",
-	// 	email: "Loading...",
-	// 	resume: "Loading...",
-	// });
-
-
 	// Types for better type safety
 	interface Profile {
 		name: string;
@@ -137,6 +23,7 @@ const StudentDashboard = () => {
 		id: string;
 		title: string;
 		company: string;
+		role: string;
 		status: 'Not Applied' | 'Rejected' | 'Accepted' | 'Interview' | 'Applied';
 		interviewPrep?: InterviewPrepResource[];
 	}
@@ -175,13 +62,6 @@ const StudentDashboard = () => {
 		set(ref(database, `users/${uid}/phone`), profile.phone);
 		set(ref(database, `users/${uid}/skills`), profile.skills);
 		setIsEditingProfile(false);
-	};
-	
-	const handleResumeUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0];
-		if (file) {
-		  setProfile(prev => ({...prev, resume: file}));
-		}
 	};
 
 	//Job application method
@@ -259,15 +139,15 @@ const StudentDashboard = () => {
 									if (snapshot2.exists()) {
 										const snapshot2Entries = Object.entries(snapshot2.val());
 										const updatedJobs = snapshot2Entries.map(([key, value]) => {
-											if (typeof value === 'object' && value !== null && 'title' in value && 'ctc' in value && 'company' in value) {
+											if (typeof value === 'object' && value !== null && 'title' in value && 'ctc' in value && 'company' in value && 'role' in value) {
 												if (snapshot1Keys.has(key)) {
-													return { id: key, title: String(value.title), company: String(value.company), status: snapshot1Data[key].status };
+													return { id: key, title: String(value.title), company: String(value.company), status: snapshot1Data[key].status, role: String(value.role) };
 												} else {
-													return { id: key, title: String(value.title), company: String(value.company), status: "Not Applied" };
+													return { id: key, title: String(value.title), company: String(value.company), status: "Not Applied" , role: String(value.role)};
 												}
 											} else {
 												console.error(`Invalid value for key ${key}:`, value);
-												return { id: key, title: "Unknown", company: "Unknown", status: "Not Applied" };
+												return { id: key, title: "Unknown", company: "Unknown", status: "Not Applied", role: "Unknown" };
 											}
 										});
 										updatedJobs.sort((a, b) => {
@@ -401,7 +281,7 @@ const StudentDashboard = () => {
 					{filteredJobs.map((job) => (
 						<li key={job.id} className={styles.jobItem}>
 							<div>
-								<strong>{job.title}</strong> at {job.company}
+								<strong>{job.title}</strong> at {job.company} for role of {job.role} -
 								<span className={styles.jobStatus}>{job.status}</span>
 							</div>
 							{job.status === 'Not Applied' && (
